@@ -3,16 +3,18 @@ import { connectDB } from "@/lib/mongodb";
 import Content from "@/models/Content";
 import { withCors } from "@/lib/cors";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await connectDB();
   const body = await req.json();
-  const content = await Content.findByIdAndUpdate(params.id, body, { new: true });
+  const content = await Content.findByIdAndUpdate(id, body, { new: true });
   return withCors(NextResponse.json(content));
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await connectDB();
-  await Content.findByIdAndDelete(params.id);
+  await Content.findByIdAndDelete(id);
   return withCors(NextResponse.json({ success: true }));
 }
 

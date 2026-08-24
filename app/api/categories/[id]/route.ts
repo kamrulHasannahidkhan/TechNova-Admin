@@ -3,16 +3,18 @@ import { connectDB } from "@/lib/mongodb";
 import Category from "@/models/Category";
 import { withCors } from "@/lib/cors";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await connectDB();
   const body = await req.json();
-  const category = await Category.findByIdAndUpdate(params.id, body, { new: true });
+  const category = await Category.findByIdAndUpdate(id, body, { new: true });
   return withCors(NextResponse.json(category));
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await connectDB();
-  await Category.findByIdAndDelete(params.id);
+  await Category.findByIdAndDelete(id);
   return withCors(NextResponse.json({ success: true }));
 }
 
