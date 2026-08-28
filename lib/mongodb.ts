@@ -29,7 +29,7 @@ export async function connectDB(retries = 4, delayMs = 1500) {
       try {
         const conn = await mongoose.connect(MONGODB_URI, {
           dbName: "ecommerce",
-          serverSelectionTimeoutMS: 8000,
+          serverSelectionTimeoutMS: 15000,
         });
         console.log("MongoDB connected via DNS server:", server);
         return conn;
