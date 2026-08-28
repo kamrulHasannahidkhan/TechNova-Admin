@@ -3,8 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
-  { href: "/products", label: "Products" },
-  { href: "/categories", label: "Categories" },
   { href: "/content", label: "Site Content" },
 ];
 
