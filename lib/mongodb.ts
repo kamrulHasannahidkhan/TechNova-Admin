@@ -11,7 +11,7 @@ if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
-export async function connectDB(retries = 4, delayMs = 1500) {
+export async function connectDB(retries = 2, delayMs = 500) {
   if (cached.conn) return cached.conn;
 
   const MONGODB_URI = process.env.MONGODB_URI;
@@ -29,9 +29,9 @@ export async function connectDB(retries = 4, delayMs = 1500) {
       try {
         const conn = await mongoose.connect(MONGODB_URI, {
           dbName: "ecommerce",
-          serverSelectionTimeoutMS: 15000,
+          serverSelectionTimeoutMS: 4000,
+          maxPoolSize: 5,
         });
-        console.log("MongoDB connected via DNS server:", server);
         return conn;
       } catch (err) {
         console.error(`MongoDB connection attempt ${attempt} failed (DNS: ${server}):`, err);
