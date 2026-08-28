@@ -3,13 +3,6 @@ import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { withCors } from "@/lib/cors";
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  await connectDB();
-  const product = await Product.findById(id).populate("category");
-  return withCors(NextResponse.json(product));
-}
-
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await connectDB();

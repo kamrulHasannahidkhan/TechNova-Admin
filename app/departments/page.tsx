@@ -5,7 +5,7 @@ type Department = { _id: string; title: string; image: string; link: string; ord
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [form, setForm] = useState({ title: "", link: "", order: 0 });
+  const [form, setForm] = useState({ title: "", order: 0 });
   const [file, setFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState("");
@@ -19,14 +19,14 @@ export default function DepartmentsPage() {
   useEffect(() => { load(); }, []);
 
   const resetForm = () => {
-    setForm({ title: "", link: "", order: 0 });
+    setForm({ title: "", order: 0 });
     setFile(null);
     setCurrentImage("");
     setEditingId(null);
   };
 
   const handleEdit = (d: Department) => {
-    setForm({ title: d.title, link: d.link, order: d.order });
+    setForm({ title: d.title, order: d.order });
     setCurrentImage(d.image);
     setEditingId(d._id);
   };
@@ -85,8 +85,6 @@ export default function DepartmentsPage() {
         <h2 className="font-medium">{editingId ? "Edit department" : "Add new department"}</h2>
         <input className="border p-2 rounded" placeholder="Title (e.g. Cell Phones)" value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })} required />
-        <input className="border p-2 rounded" placeholder="Link (optional, e.g. /category/phones)" value={form.link}
-          onChange={(e) => setForm({ ...form, link: e.target.value })} />
         <input type="number" className="border p-2 rounded" placeholder="Order (0 = first)" value={form.order}
           onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
         <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />

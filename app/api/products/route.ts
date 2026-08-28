@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
+import "@/models/Department";
 import { withCors } from "@/lib/cors";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   await connectDB();
-  const products = await Product.find().populate("category").sort({ createdAt: -1 });
+  const departmentId = req.nextUrl.searchParams.get("department");
+  const query = departmentId ? { department: departmentId } : {};
+  const products = await Product.find(query).populate("department").sort({ createdAt: -1 });
   return withCors(NextResponse.json(products));
 }
 
