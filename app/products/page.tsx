@@ -4,8 +4,15 @@ import Link from "next/link";
 import DeleteButton from "./DeleteButton";
 
 export default async function ProductsPage() {
-  await connectDB();
-  const products = await Product.find().sort({ createdAt: -1 }).lean();
+  let products: any[] = [];
+  let error = "";
+
+  try {
+    await connectDB();
+    products = await Product.find().sort({ createdAt: -1 }).lean();
+  } catch (err) {
+    error = "Could not load products — database connection timed out. Try refreshing.";
+  }
 
   return (
     <div className="p-8">
@@ -15,29 +22,38 @@ export default async function ProductsPage() {
           + Add Product
         </Link>
       </div>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="py-2">Name</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p: any) => (
-            <tr key={p._id} className="border-b">
-              <td className="py-2">{p.name}</td>
-              <td>৳{p.price}</td>
-              <td>{p.stock}</td>
-              <td className="flex gap-2 py-2">
-                <Link href={`/products/${p._id}/edit`} className="text-blue-600">Edit</Link>
-                <DeleteButton id={p._id.toString()} />
-              </td>
+
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+
+      {!error && products.length === 0 && (
+        <p className="text-gray-500">No products found — add one above.</p>
+      )}
+
+      {products.length > 0 && (
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="py-2">Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((p: any) => (
+              <tr key={p._id} className="border-b">
+                <td className="py-2">{p.name}</td>
+                <td>৳{p.price}</td>
+                <td>{p.stock}</td>
+                <td className="flex gap-2 py-2">
+                  <Link href={`/products/${p._id}/edit`} className="text-blue-600">Edit</Link>
+                  <DeleteButton id={p._id.toString()} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
