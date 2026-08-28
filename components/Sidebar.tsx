@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
+  { href: "/departments", label: "Shop by Department" },
   { href: "/content", label: "Site Content" },
 ];
 
