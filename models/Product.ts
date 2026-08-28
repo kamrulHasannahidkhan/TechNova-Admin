@@ -9,6 +9,7 @@ const ProductSchema = new Schema(
     stock: { type: Number, required: true, default: 0 },
     images: [{ type: String }],
     department: { type: Schema.Types.ObjectId, ref: "Department", required: true },
+    tags: [{ type: String, enum: ["new-arrival", "exclusive", "best-seller"] }],
   },
   { timestamps: true }
 );

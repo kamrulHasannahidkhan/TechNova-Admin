@@ -7,7 +7,12 @@ import { withCors } from "@/lib/cors";
 export async function GET(req: NextRequest) {
   await connectDB();
   const departmentId = req.nextUrl.searchParams.get("department");
-  const query = departmentId ? { department: departmentId } : {};
+  const tag = req.nextUrl.searchParams.get("tag");
+
+  const query: any = {};
+  if (departmentId) query.department = departmentId;
+  if (tag) query.tags = tag;
+
   const products = await Product.find(query).populate("department").sort({ createdAt: -1 });
   return withCors(NextResponse.json(products));
 }
