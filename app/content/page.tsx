@@ -14,7 +14,7 @@ type ContentBlock = {
   contactLine: string;
 };
 
-const SECTIONS = ["hero", "footer"];
+const SECTIONS = ["hero", "bottom-banner", "footer"];
 
 export default function ContentPage() {
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
@@ -104,19 +104,23 @@ export default function ContentPage() {
           onChange={(e) => setForm({ ...form, section: e.target.value })}>
           {SECTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <input className="border p-2 rounded" placeholder="Badge (e.g. সুপার অফার !)" value={form.badge}
+        <p className="text-xs text-gray-500">
+          For "bottom-banner": badge = small top text (e.g. "FREE"), title = big text (e.g. "DELIVERY"),
+          description = main line (e.g. "ON ORDERS OVER 5000 BDT"), contactLine = small subtext (e.g. "ANYWHERE IN BANGLADESH")
+        </p>
+        <input className="border p-2 rounded" placeholder="Badge" value={form.badge}
           onChange={(e) => setForm({ ...form, badge: e.target.value })} />
-        <input className="border p-2 rounded" placeholder="Title (e.g. Raspberry Pi 5)" value={form.title}
+        <input className="border p-2 rounded" placeholder="Title" value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })} />
         <textarea className="border p-2 rounded" placeholder="Description" value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })} />
-        <input className="border p-2 rounded" placeholder="Discount text (e.g. UP TO 50% Discount)" value={form.discountText}
+        <input className="border p-2 rounded" placeholder="Discount text (hero only)" value={form.discountText}
           onChange={(e) => setForm({ ...form, discountText: e.target.value })} />
         <input className="border p-2 rounded" placeholder="CTA text (e.g. Order Now)" value={form.ctaText}
           onChange={(e) => setForm({ ...form, ctaText: e.target.value })} />
         <input className="border p-2 rounded" placeholder="CTA link" value={form.ctaLink}
           onChange={(e) => setForm({ ...form, ctaLink: e.target.value })} />
-        <input className="border p-2 rounded" placeholder="Contact line (e.g. 01641757175 · www.site.com)" value={form.contactLine}
+        <input className="border p-2 rounded" placeholder="Contact line / small subtext" value={form.contactLine}
           onChange={(e) => setForm({ ...form, contactLine: e.target.value })} />
         <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
         {form.image && !file && <img src={form.image} alt="" className="w-32 rounded" />}
