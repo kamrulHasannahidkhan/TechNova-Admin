@@ -84,77 +84,82 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="p-8 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Products</h1>
+    <div className="p-8 max-w-5xl">
+      <h1 className="text-2xl font-bold mb-1">Products</h1>
+      <p className="text-sm text-[--admin-steel] mb-6">{products.length} total</p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 border p-4 rounded mb-8">
-        <h2 className="font-medium">Add product</h2>
-        <select className="border p-2 rounded" value={form.department}
+      <form onSubmit={handleSubmit} className="admin-card p-5 flex flex-col gap-3 mb-8">
+        <h2 className="font-semibold text-sm mb-1">Add product</h2>
+        <select className="admin-input" value={form.department}
           onChange={(e) => setForm({ ...form, department: e.target.value })} required>
           <option value="">Select department</option>
           {departments.map((d) => <option key={d._id} value={d._id}>{d.title}</option>)}
         </select>
-        <input className="border p-2 rounded" placeholder="Name" value={form.name}
+        <input className="admin-input" placeholder="Name" value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-        <input className="border p-2 rounded" placeholder="Slug" value={form.slug}
+        <input className="admin-input" placeholder="Slug" value={form.slug}
           onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
-        <textarea className="border p-2 rounded" placeholder="Description" value={form.description}
+        <textarea className="admin-input" placeholder="Description" value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })} required />
-        <input type="number" className="border p-2 rounded" placeholder="Price" value={form.price}
-          onChange={(e) => setForm({ ...form, price: e.target.value })} required />
-        <input type="number" className="border p-2 rounded" placeholder="Stock" value={form.stock}
-          onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
-        <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        <div className="grid grid-cols-2 gap-3">
+          <input type="number" className="admin-input" placeholder="Price" value={form.price}
+            onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+          <input type="number" className="admin-input" placeholder="Stock" value={form.stock}
+            onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+        </div>
+        <input type="file" accept="image/*" className="text-sm" onChange={(e) => setFile(e.target.files?.[0] || null)} />
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 pt-1">
           {TAGS.map((t) => (
-            <label key={t.key} className="flex items-center gap-1 text-sm">
+            <label key={t.key} className="flex items-center gap-1.5 text-sm">
               <input type="checkbox" checked={form.tags.includes(t.key)} onChange={() => toggleTag(t.key)} />
               {t.label}
             </label>
           ))}
         </div>
 
-        <button disabled={loading} className="bg-black text-white px-4 py-2 rounded">
+        <button disabled={loading} className="admin-btn-primary w-fit mt-1">
           {loading ? "Saving..." : "Add Product"}
         </button>
       </form>
 
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="py-2">Name</th>
-            <th>Department</th>
-            <th>Price</th>
-            <th>Tags</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p._id} className="border-b">
-              <td className="py-2">{p.name}</td>
-              <td>{p.department?.title}</td>
-              <td>৳{p.price}</td>
-              <td>
-                <div className="flex gap-3">
-                  {TAGS.map((t) => (
-                    <label key={t.key} className="flex items-center gap-1 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={p.tags?.includes(t.key) || false}
-                        onChange={() => toggleProductTag(p, t.key)}
-                      />
-                      {t.label}
-                    </label>
-                  ))}
-                </div>
-              </td>
-              <td><button onClick={() => handleDelete(p._id)} className="text-red-600">Delete</button></td>
+      <div className="admin-card overflow-hidden">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="text-left border-b border-[--admin-line] bg-[--admin-bg]">
+              <th className="py-3 px-4 admin-label font-normal">Name</th>
+              <th className="admin-label font-normal">Department</th>
+              <th className="admin-label font-normal">Price</th>
+              <th className="admin-label font-normal">Tags</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p._id} className="border-b border-[--admin-line] last:border-0">
+                <td className="py-3 px-4 font-medium">{p.name}</td>
+                <td className="text-[--admin-steel]">{p.department?.title}</td>
+                <td className="font-medium">৳{p.price}</td>
+                <td>
+                  <div className="flex gap-3">
+                    {TAGS.map((t) => (
+                      <label key={t.key} className="flex items-center gap-1 text-xs text-[--admin-steel]">
+                        <input
+                          type="checkbox"
+                          checked={p.tags?.includes(t.key) || false}
+                          onChange={() => toggleProductTag(p, t.key)}
+                        />
+                        {t.label}
+                      </label>
+                    ))}
+                  </div>
+                </td>
+                <td className="px-4"><button onClick={() => handleDelete(p._id)} className="admin-link-danger">Delete</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
