@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 type Department = { _id: string; title: string };
 type Product = {
-  _id: string; name: string; price: number; stock: number;
+  _id: string; name: string; price: number; originalPrice?: number; stock: number;
   department: Department; tags: string[];
 };
 
@@ -16,7 +16,7 @@ const TAGS = [
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [form, setForm] = useState({ name: "", slug: "", description: "", price: "", stock: "", department: "", tags: [] as string[] });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", price: "", originalPrice: "", stock: "", department: "", tags: [] as string[] });
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -72,13 +72,14 @@ export default function ProductsPage() {
       body: JSON.stringify({
         ...form,
         price: Number(form.price),
+        originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
         stock: Number(form.stock),
         images: imageUrl ? [imageUrl] : [],
       }),
     });
 
     setLoading(false);
-    setForm({ name: "", slug: "", description: "", price: "", stock: "", department: "", tags: [] });
+    setForm({ name: "", slug: "", description: "", price: "", originalPrice: "", stock: "", department: "", tags: [] });
     setFile(null);
     load();
   };
@@ -101,12 +102,15 @@ export default function ProductsPage() {
           onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
         <textarea className="admin-input" placeholder="Description" value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })} required />
-        <div className="grid grid-cols-2 gap-3">
-          <input type="number" className="admin-input" placeholder="Price" value={form.price}
+        <div className="grid grid-cols-3 gap-3">
+          <input type="number" className="admin-input" placeholder="Original price (optional)" value={form.originalPrice}
+            onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+          <input type="number" className="admin-input" placeholder="Sale price" value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })} required />
           <input type="number" className="admin-input" placeholder="Stock" value={form.stock}
             onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
         </div>
+        <p className="text-xs text-[--admin-steel]">Set an original price higher than the sale price to show a discount badge on the storefront.</p>
         <input type="file" accept="image/*" className="text-sm" onChange={(e) => setFile(e.target.files?.[0] || null)} />
 
         <div className="flex gap-4 pt-1">
@@ -139,7 +143,10 @@ export default function ProductsPage() {
               <tr key={p._id} className="border-b border-[--admin-line] last:border-0">
                 <td className="py-3 px-4 font-medium">{p.name}</td>
                 <td className="text-[--admin-steel]">{p.department?.title}</td>
-                <td className="font-medium">৳{p.price}</td>
+                <td className="font-medium">
+                  {p.originalPrice && <span className="line-through text-[--admin-steel] mr-1">৳{p.originalPrice}</span>}
+                  ৳{p.price}
+                </td>
                 <td>
                   <div className="flex gap-3">
                     {TAGS.map((t) => (
