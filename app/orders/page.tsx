@@ -86,18 +86,18 @@ export default function OrdersPage() {
     <div className="p-4 sm:p-8 max-w-6xl mx-auto font-sans">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-display font-bold text-ink">Orders</h1>
-        <p className="text-xs sm:text-sm text-steel mt-1">Track cart activity and completed orders.</p>
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">Orders</h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-1">Track cart activity and completed orders.</p>
       </div>
 
       {/* Main Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-line pb-3">
+      <div className="flex gap-2 mb-6 border-b border-slate-200 pb-3">
         <button
           onClick={() => setTab("ordered")}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
             tab === "ordered"
-              ? "bg-signal text-white shadow-sm"
-              : "bg-surface-subtle text-steel hover:text-ink hover:bg-surface-card border border-line"
+              ? "bg-slate-900 text-white shadow-sm"
+              : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 border border-slate-300"
           }`}
         >
           Ordered
@@ -106,8 +106,8 @@ export default function OrdersPage() {
           onClick={() => setTab("cart")}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
             tab === "cart"
-              ? "bg-signal text-white shadow-sm"
-              : "bg-surface-subtle text-steel hover:text-ink hover:bg-surface-card border border-line"
+              ? "bg-slate-900 text-white shadow-sm"
+              : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 border border-slate-300"
           }`}
         >
           Added to Cart
@@ -116,16 +116,16 @@ export default function OrdersPage() {
 
       {/* Status Filter Badges */}
       {tab === "ordered" && !loading && orders.length > 0 && (
-        <div className="flex items-center gap-2 mb-6 flex-wrap bg-surface-subtle/50 p-2.5 rounded-2xl border border-line">
-          <span className="text-xs font-semibold text-steel flex items-center gap-1.5 px-2">
+        <div className="flex items-center gap-2 mb-6 flex-wrap bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 px-2">
             <Filter className="w-3.5 h-3.5" /> Filter:
           </span>
           <button
             onClick={() => setFilter("all")}
             className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition-all ${
               filter === "all"
-                ? "bg-ink text-white shadow-sm"
-                : "bg-paper text-steel border border-line hover:text-ink hover:border-line/80"
+                ? "bg-slate-900 text-white shadow-sm"
+                : "bg-white text-slate-700 border border-slate-300 hover:text-slate-900 hover:border-slate-400"
             }`}
           >
             All ({orders.length})
@@ -136,7 +136,7 @@ export default function OrdersPage() {
               onClick={() => setFilter(s.key)}
               className={`text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all ${
                 filter === s.key
-                  ? STATUS_STYLES[s.key] + " ring-2 ring-signal/30 shadow-sm font-bold"
+                  ? STATUS_STYLES[s.key] + " ring-2 ring-slate-900/20 shadow-sm font-bold"
                   : STATUS_STYLES[s.key] + " opacity-70 hover:opacity-100"
               }`}
             >
@@ -148,13 +148,13 @@ export default function OrdersPage() {
 
       {/* Content States */}
       {loading ? (
-        <div className="py-20 text-center text-steel text-sm flex items-center justify-center gap-2">
+        <div className="py-20 text-center text-slate-500 text-sm flex items-center justify-center gap-2">
           <RefreshCw className="w-4 h-4 animate-spin" /> Loading orders...
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="py-16 text-center bg-surface-subtle border border-line rounded-2xl">
-          <ShoppingBag className="w-8 h-8 text-steel mx-auto mb-2 opacity-50" />
-          <p className="text-sm font-medium text-ink">
+        <div className="py-16 text-center bg-slate-50 border border-slate-200 rounded-2xl">
+          <ShoppingBag className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+          <p className="text-sm font-medium text-slate-900">
             {filter === "all"
               ? `No ${tab === "ordered" ? "orders" : "cart activity"} yet.`
               : `No orders with status "${STATUS_OPTIONS.find((s) => s.key === filter)?.label}".`}
@@ -165,16 +165,16 @@ export default function OrdersPage() {
           {filteredOrders.map((o) => (
             <div
               key={o._id}
-              className="bg-paper border border-line rounded-2xl p-4 sm:p-6 shadow-sm hover:border-line/80 transition-all"
+              className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm hover:border-slate-300 transition-all"
             >
               {/* Order Header */}
-              <div className="flex justify-between items-start flex-wrap gap-3 pb-4 border-b border-line">
+              <div className="flex justify-between items-start flex-wrap gap-3 pb-4 border-b border-slate-200">
                 <div>
                   {tab === "ordered" && o.customer?.fullName && (
-                    <p className="font-semibold text-ink text-base">{o.customer.fullName}</p>
+                    <p className="font-semibold text-slate-900 text-base">{o.customer.fullName}</p>
                   )}
                   {tab === "ordered" && o.customer?.phone && (
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-steel mt-1">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
                       <span className="inline-flex items-center gap-1">
                         <Phone className="w-3.5 h-3.5" /> {o.customer.phone}
                       </span>
@@ -185,20 +185,20 @@ export default function OrdersPage() {
                       )}
                     </div>
                   )}
-                  <p className="text-[11px] text-steel font-mono-spec mt-1.5 flex items-center gap-1">
+                  <p className="text-[11px] text-slate-500 font-mono mt-1.5 flex items-center gap-1">
                     <Clock className="w-3 h-3" /> {new Date(o.createdAt).toLocaleString()}
                   </p>
                 </div>
 
-                <div className="text-right flex items-center sm:flex-col justify-between sm:justify-start w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-line">
+                <div className="text-right flex items-center sm:flex-col justify-between sm:justify-start w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
                   {o.total !== undefined && (
-                    <p className="font-extrabold text-ink text-base sm:text-lg font-mono-spec">
+                    <p className="font-extrabold text-slate-900 text-base sm:text-lg font-mono">
                       ৳{o.total.toLocaleString()}
                     </p>
                   )}
                   <button
                     onClick={() => handleDelete(o._id)}
-                    className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 transition font-medium mt-1 p-1 hover:bg-rose-500/10 rounded-lg"
+                    className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 transition font-medium mt-1 p-1 hover:bg-rose-50 rounded-lg"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Delete
                   </button>
@@ -209,10 +209,10 @@ export default function OrdersPage() {
               <div className="py-3 space-y-1.5">
                 {o.items.map((item, i) => (
                   <div key={i} className="flex justify-between items-center text-xs sm:text-sm">
-                    <span className="text-ink font-medium">
-                      {item.name} <span className="text-steel font-normal">× {item.quantity}</span>
+                    <span className="text-slate-900 font-medium">
+                      {item.name} <span className="text-slate-500 font-normal">× {item.quantity}</span>
                     </span>
-                    <span className="text-steel font-mono-spec">
+                    <span className="text-slate-500 font-mono">
                       ৳{(item.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
@@ -221,20 +221,20 @@ export default function OrdersPage() {
 
               {/* Shipping & Delivery Info */}
               {tab === "ordered" && o.customer?.address && (
-                <div className="border-t border-line pt-3 mt-1 text-xs sm:text-sm text-steel space-y-1 bg-surface-subtle/50 p-3 rounded-xl border border-line/50">
-                  <p className="flex items-start gap-1.5 text-ink">
-                    <MapPin className="w-3.5 h-3.5 text-steel mt-0.5 shrink-0" />
+                <div className="border-t border-slate-200 pt-3 mt-1 text-xs sm:text-sm text-slate-500 space-y-1 bg-slate-50/50 p-3 rounded-xl border border-slate-200/50">
+                  <p className="flex items-start gap-1.5 text-slate-900">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
                     <span>
                       {o.customer.address}, <span className="font-medium">{o.customer.district}</span>
                     </span>
                   </p>
                   {o.shippingOption && (
-                    <p className="text-xs text-steel pl-5">
-                      Shipping: <span className="font-medium text-ink">{o.shippingOption}</span> (৳{o.shippingCost})
+                    <p className="text-xs text-slate-500 pl-5">
+                      Shipping: <span className="font-medium text-slate-900">{o.shippingOption}</span> (৳{o.shippingCost})
                     </p>
                   )}
                   {o.customer.notes && (
-                    <p className="text-xs italic text-steel pl-5 mt-1">
+                    <p className="text-xs italic text-slate-500 pl-5 mt-1">
                       Note: "{o.customer.notes}"
                     </p>
                   )}
@@ -243,9 +243,9 @@ export default function OrdersPage() {
 
               {/* Order Status & Actions */}
               {tab === "ordered" && (
-                <div className="border-t border-line mt-3 pt-3 flex items-center justify-between gap-3 flex-wrap">
+                <div className="border-t border-slate-200 mt-3 pt-3 flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-steel uppercase tracking-wider">Status:</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status:</span>
                     <span
                       className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
                         STATUS_STYLES[o.orderStatus || "waiting"]
@@ -261,7 +261,7 @@ export default function OrdersPage() {
                         key={s.key}
                         disabled={updatingId === o._id || o.orderStatus === s.key}
                         onClick={() => handleStatusChange(o._id, s.key)}
-                        className="text-xs px-2.5 py-1.5 rounded-lg border border-line bg-surface-card hover:bg-surface-subtle text-ink font-medium disabled:opacity-40 disabled:cursor-not-allowed transition active:scale-95 flex-1 sm:flex-initial"
+                        className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition active:scale-95 flex-1 sm:flex-initial"
                       >
                         {s.label}
                       </button>
