@@ -13,6 +13,11 @@ const OrderItemSchema = new Schema(
 const OrderSchema = new Schema(
   {
     status: { type: String, enum: ["cart", "ordered"], required: true, default: "cart" },
+    orderStatus: {
+      type: String,
+      enum: ["waiting", "confirmed", "processing", "cancelled"],
+      default: "waiting",
+    },
     items: [OrderItemSchema],
     customer: {
       fullName: String,
