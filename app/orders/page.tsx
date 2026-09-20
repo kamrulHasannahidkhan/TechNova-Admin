@@ -141,7 +141,7 @@ export default function OrdersPage() {
                 <div className="text-right flex flex-col items-end gap-1">
                   {o.total !== undefined && <p className="font-bold">৳{o.total.toLocaleString()}</p>}
                   <div className="flex gap-3">
-                    {tab === "ordered" && (
+                    {tab === "ordered" && o.orderStatus === "confirmed" && (
                       <button onClick={() => generateReceiptPDF(o)} className="admin-link-edit">Download Receipt</button>
                     )}
                     <button onClick={() => handleDelete(o._id)} className="admin-link-danger">Delete</button>
@@ -166,7 +166,7 @@ export default function OrdersPage() {
                 </div>
               )}
 
-              {tab === "ordered" && (
+              {tab === "ordered" && o.orderStatus === "confirmed" && (
                 <div className="border-t border-[--admin-line] mt-3 pt-3 flex items-center gap-2 flex-wrap">
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_STYLES[o.orderStatus || "waiting"]}`}>
                     {STATUS_OPTIONS.find((s) => s.key === (o.orderStatus || "waiting"))?.label}
