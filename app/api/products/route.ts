@@ -8,10 +8,12 @@ export async function GET(req: NextRequest) {
   await connectDB();
   const departmentId = req.nextUrl.searchParams.get("department");
   const tag = req.nextUrl.searchParams.get("tag");
+  const search = req.nextUrl.searchParams.get("search");
 
   const query: any = {};
   if (departmentId) query.department = departmentId;
   if (tag) query.tags = tag;
+  if (search) query.name = { $regex: search, $options: "i" };
 
   const products = await Product.find(query).populate("department").sort({ createdAt: -1 });
   return withCors(NextResponse.json(products));
