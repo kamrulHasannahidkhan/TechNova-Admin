@@ -31,14 +31,10 @@ const STATUS_OPTIONS: { key: Order["orderStatus"]; label: string }[] = [
 ];
 
 const STATUS_STYLES: Record<Order["orderStatus"], string> = {
-  waiting:
-    "bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-300 border-gray-200 dark:border-gray-700",
-  confirmed:
-    "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 dark:border-blue-800/50",
-  processing:
-    "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 dark:border-amber-800/50",
-  cancelled:
-    "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200 dark:border-rose-800/50",
+  waiting: "bg-gray-100 text-gray-700 border-gray-200",
+  confirmed: "bg-blue-50 text-blue-700 border-blue-200",
+  processing: "bg-amber-50 text-amber-700 border-amber-200",
+  cancelled: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
 export default function OrdersPage() {
@@ -133,26 +129,26 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-4 sm:p-8 max-w-6xl mx-auto transition-colors duration-200">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto bg-white min-h-screen transition-colors duration-200">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
             Orders
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
             Track cart activity and completed orders.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex bg-gray-100 dark:bg-[#0a192f] p-1 rounded-2xl border border-gray-200/80 dark:border-gray-800 self-start sm:self-auto">
+        <div className="flex bg-gray-100 p-1 rounded-2xl border border-gray-200 self-start sm:self-auto">
           <button
             onClick={() => setTab("ordered")}
             className={`px-5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 ${
               tab === "ordered"
-                ? "bg-white dark:bg-[#112240] text-blue-600 dark:text-blue-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
             Ordered
@@ -161,8 +157,8 @@ export default function OrdersPage() {
             onClick={() => setTab("cart")}
             className={`px-5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 ${
               tab === "cart"
-                ? "bg-white dark:bg-[#112240] text-blue-600 dark:text-blue-400 shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
             Added to Cart
@@ -178,7 +174,7 @@ export default function OrdersPage() {
             className={`text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all duration-200 border ${
               filter === "all"
                 ? "bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/20"
-                : "bg-white dark:bg-[#112240] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-[#0a192f]"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
             }`}
           >
             All ({orders.length})
@@ -191,7 +187,7 @@ export default function OrdersPage() {
                 STATUS_STYLES[s.key]
               } ${
                 filter === s.key
-                  ? "ring-2 ring-blue-600 dark:ring-blue-500 ring-offset-2 dark:ring-offset-[#0a192f] font-bold scale-[1.02]"
+                  ? "ring-2 ring-blue-600 ring-offset-2 font-bold scale-[1.02]"
                   : "opacity-70 hover:opacity-100"
               }`}
             >
@@ -203,15 +199,15 @@ export default function OrdersPage() {
 
       {/* Loading & Empty States */}
       {loading ? (
-        <div className="bg-white dark:bg-[#112240] border border-gray-100 dark:border-gray-800 rounded-3xl p-12 text-center shadow-xl shadow-gray-200/50 dark:shadow-2xl">
+        <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center shadow-sm">
           <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-xs sm:text-sm font-medium text-gray-500">
             Fetching order history...
           </p>
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="bg-white dark:bg-[#112240] border border-gray-100 dark:border-gray-800 rounded-3xl p-12 text-center shadow-xl shadow-gray-200/50 dark:shadow-2xl">
-          <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
+        <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center shadow-sm">
+          <p className="text-xs sm:text-sm font-medium text-gray-500">
             {filter === "all"
               ? `No ${tab === "ordered" ? "orders" : "cart activity"} yet.`
               : `No orders with status "${
@@ -223,12 +219,12 @@ export default function OrdersPage() {
         <>
           {/* Action Bar */}
           <div className="flex items-center justify-between mb-4 px-2">
-            <label className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300 cursor-pointer select-none">
+            <label className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-gray-600 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={allVisibleSelected}
                 onChange={toggleSelectAll}
-                className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-600/30 accent-blue-600"
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600/30 accent-blue-600"
               />
               Select all ({filteredOrders.length})
             </label>
@@ -236,7 +232,7 @@ export default function OrdersPage() {
               <button
                 onClick={handleDeleteSelected}
                 disabled={deleting}
-                className="text-xs sm:text-sm font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition disabled:opacity-50 flex items-center gap-1.5"
+                className="text-xs sm:text-sm font-semibold text-red-600 hover:text-red-700 transition disabled:opacity-50 flex items-center gap-1.5"
               >
                 <span>{deleting ? "Deleting..." : `Delete Selected (${selected.size})`}</span>
               </button>
@@ -248,7 +244,7 @@ export default function OrdersPage() {
             {filteredOrders.map((o) => (
               <div
                 key={o._id}
-                className={`bg-white dark:bg-[#112240] border border-gray-100 dark:border-gray-800 rounded-3xl p-5 sm:p-6 shadow-xl shadow-gray-200/50 dark:shadow-2xl transition-all duration-200 flex gap-4 ${
+                className={`bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 shadow-sm transition-all duration-200 flex gap-4 ${
                   selected.has(o._id) ? "ring-2 ring-blue-600/50 border-transparent" : ""
                 }`}
               >
@@ -256,7 +252,7 @@ export default function OrdersPage() {
                   type="checkbox"
                   checked={selected.has(o._id)}
                   onChange={() => toggleSelectOne(o._id)}
-                  className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-600/30 accent-blue-600 shrink-0"
+                  className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600/30 accent-blue-600 shrink-0"
                 />
 
                 <div className="flex-1 min-w-0">
@@ -264,23 +260,23 @@ export default function OrdersPage() {
                   <div className="flex justify-between items-start mb-4 flex-wrap gap-3">
                     <div>
                       {tab === "ordered" && o.customer?.fullName && (
-                        <p className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+                        <p className="font-bold text-gray-900 text-sm sm:text-base">
                           {o.customer.fullName}
                         </p>
                       )}
                       {tab === "ordered" && o.customer?.phone && (
-                        <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+                        <p className="text-xs sm:text-sm font-medium text-gray-500 mt-0.5">
                           {o.customer.phone} {o.customer.email ? `· ${o.customer.email}` : ""}
                         </p>
                       )}
-                      <p className="text-[11px] sm:text-xs font-semibold text-gray-400 dark:text-gray-500 mt-1">
+                      <p className="text-[11px] sm:text-xs font-semibold text-gray-400 mt-1">
                         {new Date(o.createdAt).toLocaleString()}
                       </p>
                     </div>
 
                     <div className="text-right flex flex-col items-end gap-1.5">
                       {o.total !== undefined && (
-                        <p className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-gray-100">
+                        <p className="text-base sm:text-lg font-extrabold text-gray-900">
                           ৳{o.total.toLocaleString()}
                         </p>
                       )}
@@ -288,14 +284,14 @@ export default function OrdersPage() {
                         {tab === "ordered" && o.orderStatus === "confirmed" && (
                           <button
                             onClick={() => generateReceiptPDF(o)}
-                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                            className="text-blue-600 hover:underline"
                           >
                             Download Receipt
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(o._id)}
-                          className="text-red-600 dark:text-red-400 hover:underline"
+                          className="text-red-600 hover:underline"
                         >
                           Delete
                         </button>
@@ -304,16 +300,16 @@ export default function OrdersPage() {
                   </div>
 
                   {/* Items List */}
-                  <div className="border-t border-gray-100 dark:border-gray-800/80 pt-3 space-y-2">
+                  <div className="border-t border-gray-100 pt-3 space-y-2">
                     {o.items.map((item, i) => (
                       <div key={i} className="flex justify-between text-xs sm:text-sm">
-                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                        <span className="font-medium text-gray-800">
                           {item.name}{" "}
-                          <span className="text-gray-400 dark:text-gray-500 font-normal">
+                          <span className="text-gray-400 font-normal">
                             × {item.quantity}
                           </span>
                         </span>
-                        <span className="font-semibold text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold text-gray-500">
                           ৳{(item.price * item.quantity).toLocaleString()}
                         </span>
                       </div>
@@ -322,19 +318,19 @@ export default function OrdersPage() {
 
                   {/* Address & Shipping Details */}
                   {tab === "ordered" && o.customer?.address && (
-                    <div className="border-t border-gray-100 dark:border-gray-800/80 mt-3 pt-3 text-xs sm:text-sm text-gray-500 dark:text-gray-400 space-y-0.5">
+                    <div className="border-t border-gray-100 mt-3 pt-3 text-xs sm:text-sm text-gray-500 space-y-0.5">
                       <p>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Address:</span>{" "}
+                        <span className="font-medium text-gray-700">Address:</span>{" "}
                         {o.customer.address}, {o.customer.district}
                       </p>
                       {o.shippingOption && (
                         <p>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">Shipping:</span>{" "}
+                          <span className="font-medium text-gray-700">Shipping:</span>{" "}
                           {o.shippingOption} (৳{o.shippingCost})
                         </p>
                       )}
                       {o.customer.notes && (
-                        <p className="italic text-gray-400 dark:text-gray-500 pt-0.5">
+                        <p className="italic text-gray-400 pt-0.5">
                           Note: {o.customer.notes}
                         </p>
                       )}
@@ -343,7 +339,7 @@ export default function OrdersPage() {
 
                   {/* Order Status Control */}
                   {tab === "ordered" && (
-                    <div className="border-t border-gray-100 dark:border-gray-800/80 mt-4 pt-3 flex items-center justify-between gap-3 flex-wrap">
+                    <div className="border-t border-gray-100 mt-4 pt-3 flex items-center justify-between gap-3 flex-wrap">
                       <span
                         className={`text-xs font-semibold px-3 py-1 rounded-full border ${
                           STATUS_STYLES[o.orderStatus || "waiting"]
@@ -364,7 +360,7 @@ export default function OrdersPage() {
                               updatingId === o._id || o.orderStatus === s.key
                             }
                             onClick={() => handleStatusChange(o._id, s.key)}
-                            className="text-xs px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700/80 bg-gray-50/50 dark:bg-[#0a192f] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#112240] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition duration-200 font-medium"
+                            className="text-xs px-3 py-1.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition duration-200 font-medium"
                           >
                             {s.label}
                           </button>
