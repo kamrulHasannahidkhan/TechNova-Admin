@@ -31,8 +31,8 @@ const STATUS_OPTIONS: { key: Order["orderStatus"]; label: string }[] = [
 ];
 
 const STATUS_STYLES: Record<Order["orderStatus"], string> = {
-  waiting: "bg-gray-100 text-gray-700 border-gray-200",
-  confirmed: "bg-blue-50 text-blue-700 border-blue-200",
+  waiting: "bg-slate-100 text-slate-700 border-slate-200",
+  confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200",
   processing: "bg-amber-50 text-amber-700 border-amber-200",
   cancelled: "bg-rose-50 text-rose-700 border-rose-200",
 };
@@ -129,36 +129,36 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-4 sm:p-8 max-w-6xl mx-auto bg-white min-h-screen transition-colors duration-200">
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto bg-white min-h-screen">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-            Orders
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Orders Management
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
-            Track cart activity and completed orders.
+          <p className="text-xs text-slate-500 font-medium">
+            Track cart activity and order statuses efficiently.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex bg-gray-100 p-1 rounded-2xl border border-gray-200 self-start sm:self-auto">
+        <div className="flex bg-slate-100/80 p-0.5 rounded-xl border border-slate-200/80 self-start sm:self-auto">
           <button
             onClick={() => setTab("ordered")}
-            className={`px-5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 ${
+            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
               tab === "ordered"
                 ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-900"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            Ordered
+            Ordered ({orders.length})
           </button>
           <button
             onClick={() => setTab("cart")}
-            className={`px-5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 ${
+            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
               tab === "cart"
                 ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-500 hover:text-gray-900"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             Added to Cart
@@ -166,15 +166,15 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Filter Badges */}
+      {/* Compact Filter Badges */}
       {tab === "ordered" && !loading && orders.length > 0 && (
-        <div className="flex gap-2 mb-6 flex-wrap items-center">
+        <div className="flex gap-1.5 mb-4 flex-wrap items-center">
           <button
             onClick={() => setFilter("all")}
-            className={`text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all duration-200 border ${
+            className={`text-[11px] font-semibold px-3 py-1 rounded-full border transition ${
               filter === "all"
-                ? "bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/20"
-                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                ? "bg-slate-900 text-white border-slate-900"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
             }`}
           >
             All ({orders.length})
@@ -183,12 +183,12 @@ export default function OrdersPage() {
             <button
               key={s.key}
               onClick={() => setFilter(s.key)}
-              className={`text-xs font-semibold px-3.5 py-1.5 rounded-full border transition-all duration-200 ${
+              className={`text-[11px] font-semibold px-3 py-1 rounded-full border transition ${
                 STATUS_STYLES[s.key]
               } ${
                 filter === s.key
-                  ? "ring-2 ring-blue-600 ring-offset-2 font-bold scale-[1.02]"
-                  : "opacity-70 hover:opacity-100"
+                  ? "ring-2 ring-blue-500 ring-offset-1 font-bold"
+                  : "opacity-75 hover:opacity-100"
               }`}
             >
               {s.label} ({countByStatus(s.key)})
@@ -199,18 +199,16 @@ export default function OrdersPage() {
 
       {/* Loading & Empty States */}
       {loading ? (
-        <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center shadow-sm">
-          <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs sm:text-sm font-medium text-gray-500">
-            Fetching order history...
-          </p>
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-xs font-medium text-slate-500">Loading data...</p>
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center shadow-sm">
-          <p className="text-xs sm:text-sm font-medium text-gray-500">
+        <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-8 text-center">
+          <p className="text-xs font-medium text-slate-500">
             {filter === "all"
-              ? `No ${tab === "ordered" ? "orders" : "cart activity"} yet.`
-              : `No orders with status "${
+              ? `No ${tab === "ordered" ? "orders" : "cart activity"} found.`
+              : `No orders in "${
                   STATUS_OPTIONS.find((s) => s.key === filter)?.label
                 }".`}
           </p>
@@ -218,13 +216,13 @@ export default function OrdersPage() {
       ) : (
         <>
           {/* Action Bar */}
-          <div className="flex items-center justify-between mb-4 px-2">
-            <label className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-gray-600 cursor-pointer select-none">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={allVisibleSelected}
                 onChange={toggleSelectAll}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600/30 accent-blue-600"
+                className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
               />
               Select all ({filteredOrders.length})
             </label>
@@ -232,66 +230,71 @@ export default function OrdersPage() {
               <button
                 onClick={handleDeleteSelected}
                 disabled={deleting}
-                className="text-xs sm:text-sm font-semibold text-red-600 hover:text-red-700 transition disabled:opacity-50 flex items-center gap-1.5"
+                className="text-xs font-semibold text-rose-600 hover:text-rose-700 transition disabled:opacity-50"
               >
-                <span>{deleting ? "Deleting..." : `Delete Selected (${selected.size})`}</span>
+                {deleting ? "Deleting..." : `Delete Selected (${selected.size})`}
               </button>
             )}
           </div>
 
-          {/* Orders List */}
-          <div className="flex flex-col gap-4">
+          {/* Compact Orders List */}
+          <div className="flex flex-col gap-2.5">
             {filteredOrders.map((o) => (
               <div
                 key={o._id}
-                className={`bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 shadow-sm transition-all duration-200 flex gap-4 ${
-                  selected.has(o._id) ? "ring-2 ring-blue-600/50 border-transparent" : ""
+                className={`bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-3.5 sm:p-4 shadow-sm hover:shadow transition-all duration-150 flex gap-3 ${
+                  selected.has(o._id) ? "ring-2 ring-blue-500/40 border-blue-400" : ""
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={selected.has(o._id)}
                   onChange={() => toggleSelectOne(o._id)}
-                  className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600/30 accent-blue-600 shrink-0"
+                  className="mt-1 w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 shrink-0"
                 />
 
                 <div className="flex-1 min-w-0">
-                  {/* Top Bar: Customer Info & Total/Actions */}
-                  <div className="flex justify-between items-start mb-4 flex-wrap gap-3">
-                    <div>
+                  {/* Top Bar: Compact Customer Details & Price */}
+                  <div className="flex justify-between items-center gap-2 mb-2 flex-wrap sm:flex-nowrap">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {tab === "ordered" && o.customer?.fullName && (
-                        <p className="font-bold text-gray-900 text-sm sm:text-base">
+                        <span className="font-bold text-slate-900 text-xs sm:text-sm">
                           {o.customer.fullName}
-                        </p>
+                        </span>
                       )}
                       {tab === "ordered" && o.customer?.phone && (
-                        <p className="text-xs sm:text-sm font-medium text-gray-500 mt-0.5">
-                          {o.customer.phone} {o.customer.email ? `· ${o.customer.email}` : ""}
-                        </p>
+                        <span className="text-xs text-slate-500 font-medium">
+                          • {o.customer.phone}
+                        </span>
                       )}
-                      <p className="text-[11px] sm:text-xs font-semibold text-gray-400 mt-1">
-                        {new Date(o.createdAt).toLocaleString()}
-                      </p>
+                      <span className="text-[11px] text-slate-400">
+                        ({new Date(o.createdAt).toLocaleDateString()}{" "}
+                        {new Date(o.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                        )
+                      </span>
                     </div>
 
-                    <div className="text-right flex flex-col items-end gap-1.5">
+                    <div className="flex items-center gap-3 ml-auto shrink-0">
                       {o.total !== undefined && (
-                        <p className="text-base sm:text-lg font-extrabold text-gray-900">
+                        <span className="text-sm sm:text-base font-extrabold text-slate-900">
                           ৳{o.total.toLocaleString()}
-                        </p>
+                        </span>
                       )}
-                      <div className="flex gap-3 text-xs font-semibold">
+                      <div className="flex items-center gap-2 text-xs font-semibold">
                         {tab === "ordered" && o.orderStatus === "confirmed" && (
                           <button
                             onClick={() => generateReceiptPDF(o)}
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 hover:text-blue-700 underline text-[11px]"
                           >
-                            Download Receipt
+                            Receipt
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(o._id)}
-                          className="text-red-600 hover:underline"
+                          className="text-rose-600 hover:text-rose-700 text-[11px]"
                         >
                           Delete
                         </button>
@@ -299,60 +302,68 @@ export default function OrdersPage() {
                     </div>
                   </div>
 
-                  {/* Items List */}
-                  <div className="border-t border-gray-100 pt-3 space-y-2">
+                  {/* Inline/Compact Items List */}
+                  <div className="bg-slate-50/70 rounded-xl p-2 border border-slate-100 flex flex-wrap gap-2 text-xs">
                     {o.items.map((item, i) => (
-                      <div key={i} className="flex justify-between text-xs sm:text-sm">
-                        <span className="font-medium text-gray-800">
-                          {item.name}{" "}
-                          <span className="text-gray-400 font-normal">
-                            × {item.quantity}
-                          </span>
+                      <div
+                        key={i}
+                        className="flex items-center gap-1.5 bg-white px-2 py-0.5 rounded-md border border-slate-200/60 shadow-2xs"
+                      >
+                        <span className="font-medium text-slate-800">
+                          {item.name}
                         </span>
-                        <span className="font-semibold text-gray-500">
-                          ৳{(item.price * item.quantity).toLocaleString()}
+                        <span className="text-slate-400 text-[11px]">
+                          ×{item.quantity}
+                        </span>
+                        <span className="font-semibold text-slate-600 text-[11px]">
+                          (৳{(item.price * item.quantity).toLocaleString()})
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Address & Shipping Details */}
+                  {/* Address & Shipping (Compact Row) */}
                   {tab === "ordered" && o.customer?.address && (
-                    <div className="border-t border-gray-100 mt-3 pt-3 text-xs sm:text-sm text-gray-500 space-y-0.5">
+                    <div className="mt-2 text-[11px] text-slate-500 flex flex-wrap gap-x-3 gap-y-0.5 items-center">
                       <p>
-                        <span className="font-medium text-gray-700">Address:</span>{" "}
+                        <strong className="text-slate-700">Addr:</strong>{" "}
                         {o.customer.address}, {o.customer.district}
                       </p>
                       {o.shippingOption && (
                         <p>
-                          <span className="font-medium text-gray-700">Shipping:</span>{" "}
+                          <strong className="text-slate-700">Shipping:</strong>{" "}
                           {o.shippingOption} (৳{o.shippingCost})
                         </p>
                       )}
                       {o.customer.notes && (
-                        <p className="italic text-gray-400 pt-0.5">
+                        <p className="italic text-slate-400">
                           Note: {o.customer.notes}
                         </p>
                       )}
                     </div>
                   )}
 
-                  {/* Order Status Control */}
+                  {/* Order Status & Actions */}
                   {tab === "ordered" && (
-                    <div className="border-t border-gray-100 mt-4 pt-3 flex items-center justify-between gap-3 flex-wrap">
-                      <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                          STATUS_STYLES[o.orderStatus || "waiting"]
-                        }`}
-                      >
-                        {
-                          STATUS_OPTIONS.find(
-                            (s) => s.key === (o.orderStatus || "waiting")
-                          )?.label
-                        }
-                      </span>
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-medium text-slate-400">
+                          Status:
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider ${
+                            STATUS_STYLES[o.orderStatus || "waiting"]
+                          }`}
+                        >
+                          {
+                            STATUS_OPTIONS.find(
+                              (s) => s.key === (o.orderStatus || "waiting")
+                            )?.label
+                          }
+                        </span>
+                      </div>
 
-                      <div className="flex gap-1.5 flex-wrap ml-auto">
+                      <div className="flex gap-1 flex-wrap ml-auto">
                         {STATUS_OPTIONS.map((s) => (
                           <button
                             key={s.key}
@@ -360,7 +371,7 @@ export default function OrdersPage() {
                               updatingId === o._id || o.orderStatus === s.key
                             }
                             onClick={() => handleStatusChange(o._id, s.key)}
-                            className="text-xs px-3 py-1.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition duration-200 font-medium"
+                            className="text-[11px] px-2 py-1 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:bg-slate-100 transition font-medium"
                           >
                             {s.label}
                           </button>
