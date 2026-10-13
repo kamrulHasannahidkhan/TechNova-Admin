@@ -1,33 +1,14 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import {
-  Package,
-  Plus,
-  Pencil,
-  Trash2,
-  Image as ImageIcon,
-  Tag,
-  Upload,
-  X,
-  Layers,
-  DollarSign,
-  AlertCircle,
-} from "lucide-react";
 
 type Department = { _id: string; title: string };
 type Product = {
-  _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  stock: number;
-  images?: string[];
-  department: Department;
-  tags: string[];
+  _id: string; name: string; slug: string; description: string;
+  price: number; originalPrice?: number; stock: number;
+  images?: string[]; department: Department; tags: string[];
 };
+
+const MAX_IMAGES = 3;
 
 const TAGS = [
   { key: "new-arrival", label: "New Arrival" },
@@ -36,22 +17,17 @@ const TAGS = [
 ];
 
 const EMPTY_FORM = {
-  name: "",
-  slug: "",
-  description: "",
-  price: "",
-  originalPrice: "",
-  stock: "",
-  department: "",
-  tags: [] as string[],
+  name: "", slug: "", description: "", price: "", originalPrice: "",
+  stock: "", department: "", tags: [] as string[],
 };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [form, setForm] = useState(EMPTY_FORM);
-  const [file, setFile] = useState<File | null>(null);
-  const [currentImage, setCurrentImage] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [inputKey, setInputKey] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -61,9 +37,7 @@ export default function ProductsPage() {
     setDepartments(await dRes.json());
   };
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const toggleTag = (tag: string) => {
     setForm((f) => ({
@@ -84,10 +58,21 @@ export default function ProductsPage() {
     load();
   };
 
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(e.target.files || []);
+    const room = MAX_IMAGES - images.length;
+    setFiles(picked.slice(0, room));
+  };
+
+  const removeImage = (url: string) => {
+    setImages((prev) => prev.filter((i) => i !== url));
+  };
+
   const resetForm = () => {
     setForm(EMPTY_FORM);
-    setFile(null);
-    setCurrentImage("");
+    setImages([]);
+    setFiles([]);
+    setInputKey((k) => k + 1);
     setEditingId(null);
   };
 
@@ -102,8 +87,9 @@ export default function ProductsPage() {
       department: p.department?._id || "",
       tags: p.tags || [],
     });
-    setCurrentImage(p.images?.[0] || "");
-    setFile(null);
+    setImages(p.images || []);
+    setFiles([]);
+    setInputKey((k) => k + 1);
     setEditingId(p._id);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -118,21 +104,23 @@ export default function ProductsPage() {
     e.preventDefault();
     setLoading(true);
 
-    let imageUrl = currentImage;
-    if (file) {
+    const uploaded: string[] = [];
+    for (const file of files) {
       const fd = new FormData();
       fd.append("file", file);
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
-      const uploadData = await uploadRes.json();
-      imageUrl = uploadData.secure_url;
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.secure_url) uploaded.push(data.secure_url);
     }
+
+    const finalImages = [...images, ...uploaded].slice(0, MAX_IMAGES);
 
     const payload = {
       ...form,
       price: Number(form.price),
       originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
       stock: Number(form.stock),
-      images: imageUrl ? [imageUrl] : [],
+      images: finalImages,
     };
 
     if (editingId) {
@@ -154,308 +142,145 @@ export default function ProductsPage() {
     load();
   };
 
+  const canAddMore = images.length < MAX_IMAGES;
+
   return (
-    <div className="p-4 sm:p-8 max-w-6xl mx-auto font-sans">
-      {/* Header */}
-      <div className="mb-6 flex justify-between items-end">
+    <div className="p-8 max-w-5xl">
+      <h1 className="text-2xl font-bold mb-1">Products</h1>
+      <p className="text-sm text-[--admin-steel] mb-6">{products.length} total</p>
+
+      <form onSubmit={handleSubmit} className="admin-card p-5 flex flex-col gap-3 mb-8">
+        <h2 className="font-semibold text-sm mb-1">{editingId ? "Edit product" : "Add product"}</h2>
+        <select className="admin-input" value={form.department}
+          onChange={(e) => setForm({ ...form, department: e.target.value })} required>
+          <option value="">Select department</option>
+          {departments.map((d) => <option key={d._id} value={d._id}>{d.title}</option>)}
+        </select>
+        <input className="admin-input" placeholder="Name" value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+        <input className="admin-input" placeholder="Slug" value={form.slug}
+          onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
+        <textarea className="admin-input" placeholder="Description" value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+        <div className="grid grid-cols-3 gap-3">
+          <input type="number" className="admin-input" placeholder="Original price (optional)" value={form.originalPrice}
+            onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+          <input type="number" className="admin-input" placeholder="Sale price" value={form.price}
+            onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+          <input type="number" className="admin-input" placeholder="Stock" value={form.stock}
+            onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+        </div>
+        <p className="text-xs text-[--admin-steel]">Set an original price higher than the sale price to show a discount badge on the storefront.</p>
+
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Products</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Manage inventory, pricing, tags, and department assignments.
-          </p>
-        </div>
-        <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-          {products.length} Total Items
-        </span>
-      </div>
+          <p className="text-sm font-medium mb-2">Images ({images.length + files.length}/{MAX_IMAGES})</p>
 
-      {/* Product Form Card */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm mb-8 space-y-4"
-      >
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-          <Package className="w-5 h-5 text-blue-600" />
-          <h2 className="font-semibold text-base text-slate-900">
-            {editingId ? "Edit Product" : "Add New Product"}
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Department
-            </label>
-            <select
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition bg-white"
-              value={form.department}
-              onChange={(e) => setForm({ ...form, department: e.target.value })}
-              required
-            >
-              <option value="">Select department</option>
-              {departments.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.title}
-                </option>
+          {images.length > 0 && (
+            <div className="flex gap-3 mb-3">
+              {images.map((url) => (
+                <div key={url} className="relative">
+                  <img src={url} alt="" className="w-20 h-20 object-cover rounded border" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(url)}
+                    className="absolute -top-2 -right-2 bg-red-600 text-white w-5 h-5 rounded-full text-xs leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
-            </select>
-          </div>
+            </div>
+          )}
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Product Name
+          {canAddMore ? (
+            <>
+              <input
+                key={inputKey}
+                type="file"
+                accept="image/*"
+                multiple
+                className="text-sm"
+                onChange={handleFiles}
+              />
+              {files.length > 0 && (
+                <p className="text-xs text-[--admin-steel] mt-1">
+                  Selected: {files.map((f) => f.name).join(", ")}
+                </p>
+              )}
+              <p className="text-xs text-[--admin-steel] mt-1">
+                You can add {MAX_IMAGES - images.length} more image(s). Hold Ctrl to pick several at once.
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-[--admin-steel]">Maximum reached. Remove one to add a different image.</p>
+          )}
+        </div>
+
+        <div className="flex gap-4 pt-1">
+          {TAGS.map((t) => (
+            <label key={t.key} className="flex items-center gap-1.5 text-sm">
+              <input type="checkbox" checked={form.tags.includes(t.key)} onChange={() => toggleTag(t.key)} />
+              {t.label}
             </label>
-            <input
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-              placeholder="e.g. Wireless Noise-Canceling Headphones"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-            />
-          </div>
+          ))}
         </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">
-            URL Slug
-          </label>
-          <input
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm font-mono focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-            placeholder="wireless-noise-canceling-headphones"
-            value={form.slug}
-            onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">
-            Description
-          </label>
-          <textarea
-            rows={3}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-            placeholder="Write a clear summary of features..."
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            required
-          />
-        </div>
-
-        {/* Pricing & Stock Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Original Price (৳)
-            </label>
-            <input
-              type="number"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-              placeholder="e.g. 5000"
-              value={form.originalPrice}
-              onChange={(e) => setForm({ ...form, originalPrice: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Sale Price (৳)
-            </label>
-            <input
-              type="number"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-              placeholder="e.g. 4200"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Stock Quantity
-            </label>
-            <input
-              type="number"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
-              placeholder="e.g. 25"
-              value={form.stock}
-              onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        <p className="text-xs text-slate-500 flex items-center gap-1.5">
-          <AlertCircle className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          Set an original price higher than the sale price to display a discount badge on the storefront.
-        </p>
-
-        {/* Image Upload Area */}
-        <div className="pt-2">
-          <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-            Product Image
-          </label>
-          <div className="flex items-center gap-4">
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-            />
-            {currentImage && !file && (
-              <div className="relative group shrink-0">
-                <img
-                  src={currentImage}
-                  alt="Product thumbnail"
-                  className="w-14 h-14 object-cover rounded-xl border border-slate-200 shadow-sm"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Form Tags */}
-        <div className="pt-2">
-          <span className="block text-xs font-semibold text-slate-600 mb-2">
-            Badges & Attributes
-          </span>
-          <div className="flex gap-4 flex-wrap">
-            {TAGS.map((t) => (
-              <label
-                key={t.key}
-                className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none"
-              >
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                  checked={form.tags.includes(t.key)}
-                  onChange={() => toggleTag(t.key)}
-                />
-                {t.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 pt-3 border-t border-slate-100">
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm shadow-sm transition active:scale-95 disabled:opacity-50"
-          >
+        <div className="flex gap-2 mt-1">
+          <button disabled={loading} className="admin-btn-primary w-fit">
             {loading ? "Saving..." : editingId ? "Update Product" : "Add Product"}
           </button>
           {editingId && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition"
-            >
+            <button type="button" onClick={resetForm} className="admin-btn-secondary w-fit">
               Cancel
             </button>
           )}
         </div>
       </form>
 
-      {/* Products Table Card */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-500 font-semibold text-xs uppercase tracking-wider">
-                <th className="py-3.5 px-4">Product Name</th>
-                <th className="py-3.5 px-4">Department</th>
-                <th className="py-3.5 px-4">Price</th>
-                <th className="py-3.5 px-4">Tags</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+      <div className="admin-card overflow-hidden">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="text-left border-b border-[--admin-line] bg-[--admin-bg]">
+              <th className="py-3 px-4 admin-label font-normal">Name</th>
+              <th className="admin-label font-normal">Department</th>
+              <th className="admin-label font-normal">Price</th>
+              <th className="admin-label font-normal">Tags</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p._id} className="border-b border-[--admin-line] last:border-0">
+                <td className="py-3 px-4 font-medium">{p.name}</td>
+                <td className="text-[--admin-steel]">{p.department?.title}</td>
+                <td className="font-medium">
+                  {p.originalPrice && <span className="line-through text-[--admin-steel] mr-1">৳{p.originalPrice}</span>}
+                  ৳{p.price}
+                </td>
+                <td>
+                  <div className="flex gap-3">
+                    {TAGS.map((t) => (
+                      <label key={t.key} className="flex items-center gap-1 text-xs text-[--admin-steel]">
+                        <input
+                          type="checkbox"
+                          checked={p.tags?.includes(t.key) || false}
+                          onChange={() => toggleProductTag(p, t.key)}
+                        />
+                        {t.label}
+                      </label>
+                    ))}
+                  </div>
+                </td>
+                <td className="px-4">
+                  <div className="flex gap-3">
+                    <button onClick={() => handleEdit(p)} className="admin-link-edit">Edit</button>
+                    <button onClick={() => handleDelete(p._id)} className="admin-link-danger">Delete</button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {products.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-400 text-sm">
-                    No products added yet.
-                  </td>
-                </tr>
-              ) : (
-                products.map((p) => (
-                  <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-3.5 px-4 font-medium text-slate-900">
-                      <div className="flex items-center gap-3">
-                        {p.images?.[0] ? (
-                          <img
-                            src={p.images[0]}
-                            alt={p.name}
-                            className="w-10 h-10 object-cover rounded-lg border border-slate-200 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                            <ImageIcon className="w-5 h-5 text-slate-400" />
-                          </div>
-                        )}
-                        <div>
-                          <p className="font-semibold text-slate-900">{p.name}</p>
-                          <p className="text-xs text-slate-400 font-mono">/products/{p.slug}</p>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4 text-slate-600">
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md border border-slate-200">
-                        {p.department?.title || "Unassigned"}
-                      </span>
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono font-medium text-slate-900">
-                      {p.originalPrice && (
-                        <span className="line-through text-slate-400 text-xs mr-1.5">
-                          ৳{p.originalPrice}
-                        </span>
-                      )}
-                      <span>৳{p.price}</span>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="flex gap-2 flex-wrap">
-                        {TAGS.map((t) => (
-                          <label
-                            key={t.key}
-                            className="flex items-center gap-1 text-xs text-slate-600 cursor-pointer select-none hover:text-slate-900"
-                          >
-                            <input
-                              type="checkbox"
-                              className="w-3.5 h-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                              checked={p.tags?.includes(t.key) || false}
-                              onChange={() => toggleProductTag(p, t.key)}
-                            />
-                            {t.label}
-                          </label>
-                        ))}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(p)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 hover:text-slate-900 p-1.5 hover:bg-slate-100 rounded-lg transition"
-                        >
-                          <Pencil className="w-3.5 h-3.5" /> Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p._id)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-rose-600 hover:text-rose-700 p-1.5 hover:bg-rose-50 rounded-lg transition"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
