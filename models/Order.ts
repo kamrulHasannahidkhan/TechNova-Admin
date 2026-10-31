@@ -25,6 +25,7 @@ const OrderSchema = new Schema(
       email: String,
       address: String,
       district: String,
+      thana: String,
       notes: String,
     },
     shippingOption: String,

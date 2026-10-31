@@ -13,7 +13,7 @@ type Order = {
     phone?: string;
     email?: string;
     address?: string;
-    district?: string;
+    district?: string; thana?: string;
     notes?: string;
   };
   shippingOption?: string;
@@ -327,7 +327,7 @@ export default function OrdersPage() {
                     <div className="mt-2 text-[11px] text-slate-500 flex flex-wrap gap-x-3 gap-y-0.5 items-center">
                       <p>
                         <strong className="text-slate-700">Addr:</strong>{" "}
-                        {o.customer.address}, {o.customer.district}
+                        {o.customer.address}, {o.customer.thana ? `${o.customer.thana}, ` : ""}{o.customer.district}
                       </p>
                       {o.shippingOption && (
                         <p>
