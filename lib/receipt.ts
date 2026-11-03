@@ -2,6 +2,8 @@ import jsPDF from "jspdf";
 
 // Shown in the footer of the receipt. Change to your real website.
 const WEBSITE = "technovabd.vercel.app";
+const SHOP_ADDRESS = "New Eskaton Road - 1217, Dhaka, Bangladesh";
+const SHOP_PHONE = "+8801606586207";
 
 type RGB = [number, number, number];
 const ORANGE: RGB = [249, 115, 22];
@@ -83,6 +85,8 @@ export function generateReceiptPDF(order: Order) {
   doc.setFontSize(9);
   ink(GREY);
   doc.text("Mobile Accessories  |  Gadgets  |  Smart Living", M, 35);
+  doc.setFontSize(8);
+  doc.text(`${SHOP_ADDRESS}  |  ${SHOP_PHONE}`, M, 40.5);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
