@@ -19,6 +19,7 @@ const WHITE: RGB = [255, 255, 255];
 
 type OrderItem = { name: string; price: number; quantity: number };
 type Order = {
+  orderNumber?: string;
   _id: string;
   items: OrderItem[];
   customer?: {
@@ -53,7 +54,7 @@ export function generateReceiptPDF(order: Order) {
 
   const created = new Date(order.createdAt);
   const pad = (n: number) => String(n).padStart(2, "0");
-  const orderNo = `TN${created.getFullYear()}${pad(created.getMonth() + 1)}${pad(created.getDate())}${order._id.slice(-4).toUpperCase()}`;
+  const orderNo = order.orderNumber || order._id.slice(-8).toUpperCase();
   const dateText = created
     .toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true })
     .replace(/\b(am|pm)\b/, (s) => s.toUpperCase());

@@ -29,6 +29,7 @@ const OrderSchema = new Schema(
       notes: String,
     },
     shippingOption: String,
+    orderNumber: String,
     shippingCost: Number,
     subtotal: Number,
     total: Number,
