@@ -15,7 +15,7 @@ const OrderSchema = new Schema(
     status: { type: String, enum: ["cart", "ordered"], required: true, default: "cart" },
     orderStatus: {
       type: String,
-      enum: ["waiting", "confirmed", "processing", "cancelled"],
+      enum: ["waiting", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded", "failed"],
       default: "waiting",
     },
     items: [OrderItemSchema],

@@ -6,7 +6,7 @@ type OrderItem = { name: string; price: number; quantity: number };
 type Order = {
   _id: string;
   status: "cart" | "ordered";
-  orderStatus: "waiting" | "confirmed" | "processing" | "cancelled";
+  orderStatus: "waiting" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded" | "failed";
   items: OrderItem[];
   customer?: {
     fullName?: string;
@@ -27,14 +27,22 @@ const STATUS_OPTIONS: { key: Order["orderStatus"]; label: string }[] = [
   { key: "waiting", label: "Waiting" },
   { key: "confirmed", label: "Confirm" },
   { key: "processing", label: "On Process" },
+  { key: "shipped", label: "Shipped" },
+  { key: "delivered", label: "Delivered" },
   { key: "cancelled", label: "Cancel" },
+  { key: "refunded", label: "Refunded" },
+  { key: "failed", label: "Failed" },
 ];
 
 const STATUS_STYLES: Record<Order["orderStatus"], string> = {
   waiting: "bg-slate-100 text-slate-700 border-slate-200",
   confirmed: "bg-emerald-50 text-emerald-700 border-emerald-200",
   processing: "bg-amber-50 text-amber-700 border-amber-200",
+  shipped: "bg-indigo-100 text-indigo-700",
+  delivered: "bg-green-100 text-green-700",
   cancelled: "bg-rose-50 text-rose-700 border-rose-200",
+  refunded: "bg-purple-100 text-purple-700",
+  failed: "bg-orange-100 text-orange-700",
 };
 
 export default function OrdersPage() {
