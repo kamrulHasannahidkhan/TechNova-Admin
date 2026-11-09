@@ -292,7 +292,7 @@ export default function OrdersPage() {
                         </span>
                       )}
                       <div className="flex items-center gap-2 text-xs font-semibold">
-                        {tab === "ordered" && o.orderStatus === "confirmed" && (
+                        {tab === "ordered" && ["confirmed", "processing", "shipped", "delivered"].includes(o.orderStatus) && (
                           <button
                             onClick={() => generateReceiptPDF(o)}
                             className="text-blue-600 hover:text-blue-700 underline text-[11px]"
