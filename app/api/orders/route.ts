@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   delete body.orderNumber;
+  if (body.userEmail) body.userEmail = String(body.userEmail).toLowerCase();
   if (body.status === "ordered") {
     body.orderNumber = await nextOrderNumber();
   }
