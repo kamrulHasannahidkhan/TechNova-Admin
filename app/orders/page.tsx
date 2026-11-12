@@ -1,4 +1,5 @@
 "use client";
+import OrderEditor from "@/components/OrderEditor";
 import { useEffect, useState } from "react";
 import { generateReceiptPDF } from "@/lib/receipt";
 
@@ -301,6 +302,7 @@ export default function OrdersPage() {
                           </button>
                         )}
                         <button
+                        {tab === "ordered" ? <OrderEditor order={o} onSaved={() => load(tab)} /> : null}
                           onClick={() => handleDelete(o._id)}
                           className="text-rose-600 hover:text-rose-700 text-[11px]"
                         >
