@@ -301,8 +301,8 @@ export default function OrdersPage() {
                             Receipt
                           </button>
                         )}
-                        <button
                         {tab === "ordered" ? <OrderEditor order={o} onSaved={() => load(tab)} /> : null}
+                        <button
                           onClick={() => handleDelete(o._id)}
                           className="text-rose-600 hover:text-rose-700 text-[11px]"
                         >

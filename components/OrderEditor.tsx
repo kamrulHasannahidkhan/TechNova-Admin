@@ -56,7 +56,7 @@ export default function OrderEditor({
 
   return (
     <>
-      <button type="button" onClick={openEditor} className="admin-link-edit">
+      <button type="button" onClick={openEditor} className="text-[11px] font-medium text-blue-600 hover:text-blue-700 underline underline-offset-2">
         Edit Price
       </button>
 
