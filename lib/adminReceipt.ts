@@ -150,8 +150,8 @@ export function generateAdminReceiptPDF(order: AdminOrder, discount: number) {
   };
   row("Items subtotal", tk(itemsSum));
   row("Delivery charge", tk(shipping));
-  row("Total (with delivery)", tk(total), true);
-  if (off > 0) row("Discount", `- ${tk(off)}`);
+  row("Original price", tk(total), true);
+  if (off > 0) row("Deducted", `- ${tk(off)}`);
 
   // Payable
   y += 2;
@@ -160,7 +160,7 @@ export function generateAdminReceiptPDF(order: AdminOrder, discount: number) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("Payable Amount", M + 5, y + 9);
+  doc.text("Discounted Price", M + 5, y + 9);
   doc.setFontSize(15);
   doc.text(tk(payable), R - 5, y + 9.5, { align: "right" });
 
