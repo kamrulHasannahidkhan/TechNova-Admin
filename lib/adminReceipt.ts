@@ -14,7 +14,7 @@ type AdminOrder = {
 const tk = (n = 0) =>
   `Tk ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-export function generateAdminReceiptPDF(order: AdminOrder, discount: number) {
+export function generateAdminReceiptPDF(order: AdminOrder, note = "") {
   const doc = new jsPDF({ unit: "mm", format: "a5" });
   const W = 148;
   const M = 10;
@@ -24,8 +24,6 @@ export function generateAdminReceiptPDF(order: AdminOrder, discount: number) {
   const itemsSum = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
   const shipping = order.shippingCost || 0;
   const total = order.total ?? itemsSum + shipping;
-  const off = Math.min(Math.max(discount || 0, 0), total);
-  const payable = total - off;
 
   const orderNo = order.orderNumber || order._id.slice(-8).toUpperCase();
   const when = new Date(order.createdAt).toLocaleString("en-GB", {
@@ -138,36 +136,60 @@ export function generateAdminReceiptPDF(order: AdminOrder, discount: number) {
     y = 16;
   }
 
-  // Totals
-  const row = (label: string, value: string, bold = false) => {
-    doc.setFont("helvetica", bold ? "bold" : "normal");
-    doc.setFontSize(bold ? 10 : 9);
-    if (bold) doc.setTextColor(20, 24, 36);
-    else doc.setTextColor(100, 110, 125);
+  // Subtotal and delivery
+  const row = (label: string, value: string) => {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 110, 125);
     doc.text(label, M, y);
     doc.text(value, R, y, { align: "right" });
-    y += bold ? 7 : 5.5;
+    y += 5.5;
   };
   row("Items subtotal", tk(itemsSum));
   row("Delivery charge", tk(shipping));
-  row("Original price", tk(total), true);
-  if (off > 0) row("Deducted", `- ${tk(off)}`);
 
-  // Payable
+  // Original price box
   y += 2;
   doc.setFillColor(249, 115, 22);
   doc.roundedRect(M, y, W - M * 2, 14, 3, 3, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("Discounted Price", M + 5, y + 9);
+  doc.text("Original Price", M + 5, y + 9);
   doc.setFontSize(15);
-  doc.text(tk(payable), R - 5, y + 9.5, { align: "right" });
+  doc.text(tk(total), R - 5, y + 9.5, { align: "right" });
+  y += 14;
 
+  // Note
+  const cleanNote = note.trim();
+  if (cleanNote) {
+    const noteLines: string[] = doc.splitTextToSize(cleanNote, W - M * 2).slice(0, 12);
+    if (y + 14 + noteLines.length * 4.5 > 200) {
+      doc.addPage();
+      y = 16;
+    }
+    y += 9;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(100, 110, 125);
+    doc.text("NOTE", M, y);
+    y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(20, 24, 36);
+    doc.text(noteLines, M, y);
+    y += noteLines.length * 4.5;
+  }
+
+  y += 10;
+  if (y > 203) {
+    doc.addPage();
+    y = 16;
+  }
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 110, 125);
-  doc.text("For admin records only - not a customer receipt", W / 2, y + 22, { align: "center" });
+  doc.text("For admin records only - not a customer receipt", W / 2, y, { align: "center" });
 
   doc.save(`admin-receipt-${orderNo}.pdf`);
 }
