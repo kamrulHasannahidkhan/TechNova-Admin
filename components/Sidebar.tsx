@@ -18,7 +18,6 @@ import {
 const LINKS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/orders", label: "Orders", icon: ShoppingBag },
-  { href: "/events", label: "Pixel Events", icon: "📈" },
   { href: "/departments", label: "Departments", icon: Layers },
   { href: "/products", label: "Products", icon: Package },
   { href: "/perks", label: "Trust Badges", icon: ShieldCheck },
